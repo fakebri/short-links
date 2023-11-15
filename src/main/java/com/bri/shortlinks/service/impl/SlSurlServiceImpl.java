@@ -100,6 +100,15 @@ public class SlSurlServiceImpl implements SlSurlService {
         }
     }
 
+    @Override
+    public String navigate(String redirectPath) {
+        SlSurl originalUrl = slSurlMapper.queryByShortUrl(redirectPath);
+        if (originalUrl != null) {
+            return originalUrl.getOriginalUrl();
+        }
+        return null;
+    }
+
     private String generateRandomShortUrl(String originalUrl) {
         /*
          *  TODO:长度不能写死，用一个常量或者动态调整；

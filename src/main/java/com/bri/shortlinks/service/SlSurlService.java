@@ -55,4 +55,6 @@ public interface SlSurlService {
     SlSurl reShort(String shortUrl);
 
     SlSurl shortUrl(String originalUrl);
+
+    String navigate(String shortUrl);
 }
