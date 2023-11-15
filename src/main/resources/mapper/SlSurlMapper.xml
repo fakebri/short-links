@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bri.shortlinks.dao.SlSurlMapper">
+    <resultMap type="com.bri.shortlinks.pojo.SlSurl" id="SlSurlMap">
+        <result property="surlId" column="SURL_ID" jdbcType="INTEGER"/>
+        <result property="shortUrl" column="SHORT_URL" jdbcType="VARCHAR"/>
+        <result property="originalUrl" column="ORIGINAL_URL" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!-- 通过ID查询单条数据 -->
+    <select id="queryById" resultMap="SlSurlMap">
+        select SURL_ID,
+               SHORT_URL,
+               ORIGINAL_URL
+        from sl_surl
+        where SURL_ID = #{surlId}
+    </select>
+
+    <!--分页查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="SlSurlMap">
+        select
+        SURL_ID,SHORT_URL,ORIGINAL_URL
+        from sl_surl
+        <where>
+            <if test="surlId != null and surlId != ''">
+                and SURL_ID = #{surlId}
+            </if>
+            <if test="shortUrl != null and shortUrl != ''">
+                and SHORT_URL = #{shortUrl}
+            </if>
+            <if test="originalUrl != null and originalUrl != ''">
+                and ORIGINAL_URL = #{originalUrl}
+            </if>
+        </where>
+        limit #{pageable.offset}, #{pageable.pageSize}
+    </select>
+
+    <!--统计总行数-->
+    <select id="count" resultType="java.lang.Long">
+        select count(1)
+        from sl_surl
+        <where>
+            <if test="surlId != null and surlId != ''">
+                and SURL_ID = #{surlId}
+            </if>
+            <if test="shortUrl != null and shortUrl != ''">
+                and SHORT_URL = #{shortUrl}
+            </if>
+            <if test="originalUrl != null and originalUrl != ''">
+                and ORIGINAL_URL = #{originalUrl}
+            </if>
+        </where>
+    </select>
+    <select id="queryByShortUrl" resultMap="SlSurlMap">
+        select *
+        from sl_surl
+        where SHORT_URL = #{shortUrl};
+    </select>
+
+    <!--新增数据-->
+    <insert id="insert" keyProperty="SURL_ID" useGeneratedKeys="true">
+        insert into sl_surl(SURL_ID, SHORT_URL, ORIGINAL_URL)
+        values (#{surlId}, #{shortUrl}, #{originalUrl})
+    </insert>
+
+    <!-- 批量新增数据 -->
+    <insert id="insertBatch" keyProperty="SURL_ID" useGeneratedKeys="true">
+        insert into sl_surl(SURL_ID,SHORT_URL,ORIGINAL_URL)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.surlId},#{entity.shortUrl},#{entity.originalUrl})
+        </foreach>
+    </insert>
+
+    <!-- 批量新增或按主键更新数据 -->
+    <insert id="insertOrUpdateBatch" keyProperty="SURL_ID" useGeneratedKeys="true">
+        insert into sl_surl(SURL_ID,SHORT_URL,ORIGINAL_URL)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.surlId},#{entity.shortUrl},#{entity.originalUrl})
+        </foreach>
+        on duplicate key update
+        SURL_ID=values(SURL_ID),
+        SHORT_URL=values(SHORT_URL),
+        ORIGINAL_URL=values(ORIGINAL_URL)
+    </insert>
+
+    <!-- 更新数据 -->
+    <update id="update">
+        update sl_surl
+        <set>
+            <if test="surlId != null and surlId != ''">
+                SURL_ID = #{surlId},
+            </if>
+            <if test="shortUrl != null and shortUrl != ''">
+                SHORT_URL = #{shortUrl},
+            </if>
+            <if test="originalUrl != null and originalUrl != ''">
+                ORIGINAL_URL = #{originalUrl},
+            </if>
+        </set>
+        where SURL_ID = #{surlId}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete
+        from sl_surl
+        where SURL_ID = #{surlId}
+    </delete>
+</mapper>
