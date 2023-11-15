@@ -81,4 +81,6 @@ public interface SlSurlMapper {
     int deleteById(Integer surlId);
 
     SlSurl queryByShortUrl(String shortUrl);
+
+    SlSurl queryByOriginalUrl(String originalUrl);
 }

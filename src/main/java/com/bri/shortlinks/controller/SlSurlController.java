@@ -5,6 +5,7 @@ import com.bri.shortlinks.service.SlSurlService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,9 +31,15 @@ public class SlSurlController {
 
 
     @ApiOperation("新增短链接")
-    @PostMapping
-    public ResponseEntity<SlSurl> add(SlSurl slSurl) {
-        return ResponseEntity.ok(slSurlService.insert(slSurl));
+    @PostMapping("/short")
+    public ResponseEntity<SlSurl> shortUrl(@RequestBody String originalUrl) {
+        return ResponseEntity.ok(slSurlService.shortUrl(originalUrl));
+    }
+
+    @ApiOperation("跳转链接")
+    @GetMapping("/s/**")
+    public String queryByShortUrl(@RequestBody String shortUrl) {
+        return "";
     }
 
 }

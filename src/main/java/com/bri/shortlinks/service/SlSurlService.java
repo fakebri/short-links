@@ -53,4 +53,6 @@ public interface SlSurlService {
     boolean deleteById(Integer surlId);
 
     SlSurl reShort(String shortUrl);
+
+    SlSurl shortUrl(String originalUrl);
 }

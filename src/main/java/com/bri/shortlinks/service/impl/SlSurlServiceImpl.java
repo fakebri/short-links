@@ -3,6 +3,7 @@ package com.bri.shortlinks.service.impl;
 import com.bri.shortlinks.dao.SlSurlMapper;
 import com.bri.shortlinks.pojo.SlSurl;
 import com.bri.shortlinks.service.SlSurlService;
+import com.bri.shortlinks.util.RandomStringUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -85,4 +86,32 @@ public class SlSurlServiceImpl implements SlSurlService {
     public SlSurl reShort(String shortUrl) {
         return slSurlMapper.queryByShortUrl(shortUrl);
     }
+
+    @Override
+    public SlSurl shortUrl(String originalUrl) {
+        if (slSurlMapper.queryByOriginalUrl(originalUrl) != null) {
+            return slSurlMapper.queryByOriginalUrl(originalUrl);
+        } else {
+            SlSurl slSurl = new SlSurl();
+            slSurl.setOriginalUrl(originalUrl);
+            slSurl.setShortUrl(generateRandomShortUrl(originalUrl));
+            slSurlMapper.insert(slSurl);
+            return slSurl;
+        }
+    }
+
+    private String generateRandomShortUrl(String originalUrl) {
+        /*
+         *  TODO:长度不能写死，用一个常量或者动态调整；
+         *     短链接不能一直重复，到达一定数量向外抛出异常；
+         */
+        String randomStr = RandomStringUtil.generateRandomString(5);
+        while (slSurlMapper.queryByShortUrl(originalUrl) != null) {
+            randomStr = RandomStringUtil.generateRandomString(5);
+        }
+        // TODO: 这里需要动态值
+        return "http://localhost:8080/shortlinks/s/" + randomStr;
+    }
+
+
 }
