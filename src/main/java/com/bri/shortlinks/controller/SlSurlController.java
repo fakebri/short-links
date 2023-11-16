@@ -1,12 +1,16 @@
 package com.bri.shortlinks.controller;
 
-import com.bri.shortlinks.pojo.SlSurl;
+import com.bri.shortlinks.dto.ReshortDTO;
+import com.bri.shortlinks.dto.ShortUrlDTO;
 import com.bri.shortlinks.service.SlSurlService;
+import com.bri.shortlinks.vo.ResultVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,17 +31,24 @@ public class SlSurlController {
     @Resource
     private SlSurlService slSurlService;
 
+    @ApiOperation("还原短链接")
     @PostMapping("/reshort")
-    public ResponseEntity<?> reShort(@RequestBody String shortUrl) {
-        System.out.println(shortUrl);
-        return ResponseEntity.ok(slSurlService.reShort(shortUrl));
+    public ResponseEntity<?> reShort(@RequestBody ReshortDTO reshortDTO) {
+        // TODO: 格式验证
+        return ResponseEntity.ok(slSurlService.reShort(reshortDTO.getShortUrl()));
     }
 
 
     @ApiOperation("新增短链接")
     @PostMapping("/short")
-    public ResponseEntity<SlSurl> shortUrl(@RequestBody String originalUrl) {
-        return ResponseEntity.ok(slSurlService.shortUrl(originalUrl));
+    public ResponseEntity<?> shortUrl(@RequestBody @Validated ShortUrlDTO shortUrlDTO, BindingResult result) {
+        if (result.hasErrors()) {
+            // 处理验证错误
+            ResultVo resultVo = new ResultVo(result.getFieldError().getDefaultMessage(), result.getFieldError().getField());
+            return ResponseEntity.badRequest().body(resultVo);
+        }
+        // TODO: 1.增加有效期; 2.可以自己定制URL。
+        return ResponseEntity.ok(slSurlService.shortUrl(shortUrlDTO.getOriginalUrl()));
     }
 
     @ApiOperation("跳转链接")

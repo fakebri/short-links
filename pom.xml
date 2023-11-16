@@ -17,6 +17,12 @@
 		<java.version>1.8</java.version>
 		<spring-cloud.version>2021.0.8</spring-cloud.version>
 	</properties>
+	<repositories>
+		<repository>
+			<id>alibaba-nexus</id>
+			<url>https://maven.aliyun.com/repository/central</url>
+		</repository>
+	</repositories>
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -69,8 +75,10 @@
 			<artifactId>spring-data-commons</artifactId>
 			<version>2.7.14</version>
 		</dependency>
-
-
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-validation</artifactId>
+		</dependency>
 	</dependencies>
 	<dependencyManagement>
 		<dependencies>

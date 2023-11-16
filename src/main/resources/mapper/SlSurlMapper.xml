@@ -64,7 +64,7 @@
 
     <!--新增数据-->
     <insert id="insert" keyProperty="SURL_ID" useGeneratedKeys="true">
-        <selectKey keyProperty="id" resultType="java.lang.Integer" order="AFTER">
+        <selectKey keyProperty="SURL_ID" resultType="java.lang.Integer" order="AFTER">
             SELECT LAST_INSERT_ID()
         </selectKey>
         insert into sl_surl(SHORT_URL, ORIGINAL_URL)
