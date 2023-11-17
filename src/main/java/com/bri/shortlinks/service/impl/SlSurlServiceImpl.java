@@ -10,6 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * 短链接-源链接;(sl_surl)表服务实现类
@@ -88,13 +89,13 @@ public class SlSurlServiceImpl implements SlSurlService {
     }
 
     @Override
-    public SlSurl shortUrl(String originalUrl) {
+    public SlSurl shortUrl(String originalUrl, String customShortUrl, int expiresDays) {
         if (slSurlMapper.queryByOriginalUrl(originalUrl) != null) {
             return slSurlMapper.queryByOriginalUrl(originalUrl);
         } else {
             SlSurl slSurl = new SlSurl();
             slSurl.setOriginalUrl(originalUrl);
-            slSurl.setShortUrl(generateRandomShortUrl(originalUrl));
+            slSurl.setShortUrl("".equals(customShortUrl) ? generateRandomShortUrl(originalUrl) : customShortUrl);
             slSurlMapper.insert(slSurl);
             return slSurl;
         }
@@ -107,6 +108,16 @@ public class SlSurlServiceImpl implements SlSurlService {
             return originalUrl.getOriginalUrl();
         }
         return null;
+    }
+
+    @Override
+    public List<SlSurl> queryAll() {
+        return slSurlMapper.queryAll();
+    }
+
+    @Override
+    public long count() {
+        return slSurlMapper.count(null);
     }
 
     private String generateRandomShortUrl(String originalUrl) {

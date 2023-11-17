@@ -11,4 +11,7 @@ public class ResultVo {
         this.message = message;
         this.data = data;
     }
+
+    public ResultVo() {
+    }
 }

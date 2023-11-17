@@ -83,4 +83,6 @@ public interface SlSurlMapper {
     SlSurl queryByShortUrl(String shortUrl);
 
     SlSurl queryByOriginalUrl(String originalUrl);
+
+    List<SlSurl> queryAll();
 }

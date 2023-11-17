@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bri.shortlinks.dao.SlUserMapper">
+    <resultMap type="com.bri.shortlinks.pojo.SlUser" id="SlUserMap">
+        <result property="userId" column="USER_ID" jdbcType="INTEGER"/>
+        <result property="userName" column="USER_NAME" jdbcType="VARCHAR"/>
+        <result property="password" column="PASSWORD" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!-- 通过ID查询单条数据 -->
+    <select id="queryById" resultMap="SlUserMap">
+        select USER_ID,
+               USER_NAME,
+               PASSWORD
+        from sl_user
+        where USER_ID = #{userId}
+    </select>
+
+    <!--分页查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="SlUserMap">
+        select
+        USER_ID,USER_NAME,PASSWORD
+        from sl_user
+        <where>
+            <if test="userId != null and userId != ''">
+                and USER_ID = #{userId}
+            </if>
+            <if test="userName != null and userName != ''">
+                and USER_NAME = #{userName}
+            </if>
+            <if test="password != null and password != ''">
+                and PASSWORD = #{password}
+            </if>
+        </where>
+        limit #{pageable.offset}, #{pageable.pageSize}
+    </select>
+
+    <!--统计总行数-->
+    <select id="count" resultType="java.lang.Long">
+        select count(1)
+        from sl_user
+        <where>
+            <if test="userId != null and userId != ''">
+                and USER_ID = #{userId}
+            </if>
+            <if test="userName != null and userName != ''">
+                and USER_NAME = #{userName}
+            </if>
+            <if test="password != null and password != ''">
+                and PASSWORD = #{password}
+            </if>
+        </where>
+    </select>
+    <select id="queryByUserNameAndPassword" resultMap="SlUserMap">
+        select *
+        from sl_user
+        where USER_NAME = #{userName}
+          and PASSWORD = #{password}
+    </select>
+    <select id="queryAll" resultMap="SlUserMap">
+        select *
+        from sl_user
+    </select>
+
+    <!--新增数据-->
+    <insert id="insert" keyProperty="USER_ID" useGeneratedKeys="true">
+        <selectKey keyProperty="userId" resultType="java.lang.Integer" order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into sl_user(USER_NAME,PASSWORD)
+        values (#{userName},#{password})
+    </insert>
+
+    <!-- 批量新增数据 -->
+    <insert id="insertBatch" keyProperty="USER_ID" useGeneratedKeys="true">
+        insert into sl_user(USER_ID,USER_NAME,PASSWORD)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.userId},#{entity.userName},#{entity.password})
+        </foreach>
+    </insert>
+
+    <!-- 批量新增或按主键更新数据 -->
+    <insert id="insertOrUpdateBatch" keyProperty="USER_ID" useGeneratedKeys="true">
+        insert into sl_user(USER_ID,USER_NAME,PASSWORD)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.userId},#{entity.userName},#{entity.password})
+        </foreach>
+        on duplicate key update
+        USER_ID=values(USER_ID),
+        USER_NAME=values(USER_NAME),
+        PASSWORD=values(PASSWORD)
+    </insert>
+
+    <!-- 更新数据 -->
+    <update id="update">
+        update sl_user
+        <set>
+            <if test="userId != null and userId != ''">
+                USER_ID = #{userId},
+            </if>
+            <if test="userName != null and userName != ''">
+                USER_NAME = #{userName},
+            </if>
+            <if test="password != null and password != ''">
+                PASSWORD = #{password},
+            </if>
+        </set>
+        where USER_ID = #{userId}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete
+        from sl_user
+        where USER_ID = #{userId}
+    </delete>
+</mapper>

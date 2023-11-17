@@ -4,6 +4,8 @@ import com.bri.shortlinks.pojo.SlSurl;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
+import java.util.List;
+
 /**
  * 短链接-源链接;(sl_surl)表服务接口
  *
@@ -54,7 +56,11 @@ public interface SlSurlService {
 
     SlSurl reShort(String shortUrl);
 
-    SlSurl shortUrl(String originalUrl);
+    SlSurl shortUrl(String originalUrl, String customShortUrl, int expiresDays);
 
     String navigate(String shortUrl);
+
+    List<SlSurl> queryAll();
+
+    long count();
 }

@@ -2,6 +2,7 @@ package com.bri.shortlinks.controller;
 
 import com.bri.shortlinks.dto.ReshortDTO;
 import com.bri.shortlinks.dto.ShortUrlDTO;
+import com.bri.shortlinks.pojo.SlSurl;
 import com.bri.shortlinks.service.SlSurlService;
 import com.bri.shortlinks.vo.ResultVo;
 import io.swagger.annotations.Api;
@@ -11,10 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -26,16 +24,32 @@ import javax.servlet.http.HttpServletRequest;
  */
 @Api(tags = "短链接-源链接对象功能接口")
 @RestController
+@CrossOrigin
 public class SlSurlController {
 
     @Resource
     private SlSurlService slSurlService;
 
+    @ApiOperation("链接数量统计")
+    @GetMapping("/count")
+    public long count() {
+        return slSurlService.count();
+    }
+
     @ApiOperation("还原短链接")
     @PostMapping("/reshort")
-    public ResponseEntity<?> reShort(@RequestBody ReshortDTO reshortDTO) {
-        // TODO: 格式验证
-        return ResponseEntity.ok(slSurlService.reShort(reshortDTO.getShortUrl()));
+    public ResponseEntity<?> reShort(@RequestBody @Validated ReshortDTO reshortDTO, BindingResult result) {
+        if (result.hasErrors()) {
+            // 处理验证错误
+            ResultVo resultVo = new ResultVo(result.getFieldError().getDefaultMessage(), result.getFieldError().getField());
+            return ResponseEntity.badRequest().body(resultVo);
+        }
+        SlSurl surl = slSurlService.reShort(reshortDTO.getShortUrl());
+        if (surl != null) {
+            ResultVo resultVo = new ResultVo("成功", surl);
+            return ResponseEntity.ok(resultVo);
+        }
+        return ResponseEntity.notFound().build();
     }
 
 
@@ -47,8 +61,10 @@ public class SlSurlController {
             ResultVo resultVo = new ResultVo(result.getFieldError().getDefaultMessage(), result.getFieldError().getField());
             return ResponseEntity.badRequest().body(resultVo);
         }
-        // TODO: 1.增加有效期; 2.可以自己定制URL。
-        return ResponseEntity.ok(slSurlService.shortUrl(shortUrlDTO.getOriginalUrl()));
+        // TODO: 1.增加有效期; 2.完成自定义url的校验
+        SlSurl resultData = slSurlService.shortUrl(shortUrlDTO.getOriginalUrl(), shortUrlDTO.getCustomShortUrl(), shortUrlDTO.getExpiresDays());
+        ResultVo resultVo = new ResultVo("新增成功", resultData);
+        return ResponseEntity.ok(resultVo);
     }
 
     @ApiOperation("跳转链接")

@@ -61,10 +61,14 @@
         from sl_surl
         where ORIGINAL_URL = #{originalUrl};
     </select>
+    <select id="queryAll" resultMap="SlSurlMap">
+        select *
+        from sl_surl
+    </select>
 
     <!--新增数据-->
     <insert id="insert" keyProperty="SURL_ID" useGeneratedKeys="true">
-        <selectKey keyProperty="SURL_ID" resultType="java.lang.Integer" order="AFTER">
+        <selectKey keyProperty="surlId" keyColumn="SURL_ID" resultType="java.lang.Integer" order="AFTER">
             SELECT LAST_INSERT_ID()
         </selectKey>
         insert into sl_surl(SHORT_URL, ORIGINAL_URL)
