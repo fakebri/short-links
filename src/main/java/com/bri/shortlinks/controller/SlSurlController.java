@@ -61,7 +61,7 @@ public class SlSurlController {
             ResultVo resultVo = new ResultVo(result.getFieldError().getDefaultMessage(), result.getFieldError().getField());
             return ResponseEntity.badRequest().body(resultVo);
         }
-        // TODO: 1.增加有效期; 2.完成自定义url的校验
+        // TODO: 1.增加有效期;
         SlSurl resultData = slSurlService.shortUrl(shortUrlDTO.getOriginalUrl(), shortUrlDTO.getCustomShortUrl(), shortUrlDTO.getExpiresDays());
         ResultVo resultVo = new ResultVo("新增成功", resultData);
         return ResponseEntity.ok(resultVo);
